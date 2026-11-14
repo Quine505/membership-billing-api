@@ -24,6 +24,10 @@ Without Docker: `npm test`. It type-checks, then runs every file in `test/`.
 - `src/countries.ts`: the country table.
 - `src/phone.ts`: phone cleaning and the three spellings.
 - `src/members.ts`: `POST /members` and `GET /members/lookup`.
+- `src/plans.ts`: `POST /plans`.
+- `src/agreements.ts`: `POST /agreements` and `GET /agreements/{id}/invoices`.
+- `src/schedule.ts`: the invoice schedule, one pure function with no HTTP in it.
+- `src/dates.ts`: date parsing and day counting. `src/money.ts`: half-up rounding on integers.
 - `src/http.ts`: the error type and JSON body reading.
 - `src/store.ts`: the in-memory maps.
 - `src/app.ts`: wires routes and error handling. `src/server.ts` listens on 8080.
@@ -34,7 +38,11 @@ Node runs handlers on one thread. Each handler reads its body first, then checks
 
 ## Skipped
 
-Parts 2 and 3 are not built yet.
+Part 3 is not built yet.
+
+## Money and dates
+
+No float ever touches an amount. Both roundings use `BigInt`: `round(a × b / c)` is `(2ab + c) / 2c` with the fraction dropped. Dates are plain year, month, day numbers, with no timezone anywhere.
 
 ## Assumptions
 
@@ -54,3 +62,16 @@ Part 1
 - On lookup, a number that fits no spelling is `INVALID_PHONE` whether or not `country` is given. `PHONE_NEEDS_COUNTRY` is only for numbers that fit some country's national shape.
 - On lookup, a national number is read in the `country` parameter, not in any member's own country. A Saudi member with a UAE SIM is found by `0501234567` with `country=AE`.
 - `PHONE_COUNTRY_MISMATCH` is checked before the search, so it is returned even when nobody has the number.
+
+Part 2
+
+- Every plan and agreement field is required. A missing `joining_fee` is `VALIDATION`, not 0.
+- A plan `id` is a non-empty string and is case-sensitive.
+- `monthly` and `joining_fee` must be integers JSON carries exactly, up to 2^53 − 1. Larger is `VALIDATION`.
+- A date is exactly `YYYY-MM-DD` and must be a real day. `2026-9-20`, `2026-02-30` and anything with a time are `VALIDATION`.
+- On `POST /agreements` the checks run in this order: `VALIDATION`, `UNKNOWN_MEMBER`, `UNKNOWN_PLAN`, `PLAN_COUNTRY_MISMATCH`.
+- A member's country is the `country` they were created with, not the country of their SIM.
+- On the invoices route an unknown agreement id is `404` even when `from` or `to` is also bad. After that, a bad date is `VALIDATION` before `INVALID_RANGE` is considered.
+- "More than 366 days after" means `to − from > 366`, so a gap of exactly 366 days is allowed.
+- A start date equal to a clamped due date counts as a due date. Start 28 Feb with due day 31 gives the full price.
+- A tiny plan can prorate to a net of 0. The invoice is still listed.
