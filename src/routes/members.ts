@@ -1,8 +1,8 @@
 import type { Hono } from 'hono'
-import { isCountry } from './countries.ts'
-import { ApiError, readBody, validation } from './http.ts'
-import { nationalToE164, parsePhone } from './phone.ts'
-import type { Member, Store } from './store.ts'
+import { isCountry } from '../domain/countries.ts'
+import { ApiError, readBody, validation } from '../http.ts'
+import { nationalToE164, parsePhone } from '../domain/phone.ts'
+import type { Member, Store } from '../store.ts'
 
 const invalidPhone = () => new ApiError(422, 'INVALID_PHONE', 'phone is not a valid AE, SA or BH mobile')
 

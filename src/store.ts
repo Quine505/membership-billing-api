@@ -1,4 +1,4 @@
-import type { Country } from './countries.ts'
+import type { Country } from './domain/countries.ts'
 
 export type Member = { id: string; name: string; country: Country; phone: string }
 export type Plan = { id: string; country: Country; currency: string; monthly: number; joining_fee: number }
@@ -10,8 +10,10 @@ export type Store = {
   membersByPhone: Map<string, Member>
   plans: Map<string, Plan>
   agreements: Map<string, Agreement>
+  // A reconciliation run is stored as the exact response body, so reading it back cannot differ.
+  runs: Map<string, object>
 }
 
 export function createStore(): Store {
-  return { members: new Map(), membersByPhone: new Map(), plans: new Map(), agreements: new Map() }
+  return { members: new Map(), membersByPhone: new Map(), plans: new Map(), agreements: new Map(), runs: new Map() }
 }

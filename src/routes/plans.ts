@@ -1,7 +1,7 @@
 import type { Hono } from 'hono'
-import { COUNTRIES, isCountry } from './countries.ts'
-import { ApiError, isInt, readBody, validation } from './http.ts'
-import type { Plan, Store } from './store.ts'
+import { COUNTRIES, isCountry } from '../domain/countries.ts'
+import { ApiError, isInt, readBody, validation } from '../http.ts'
+import type { Plan, Store } from '../store.ts'
 
 export function planRoutes(app: Hono, store: Store) {
   app.post('/plans', async (c) => {

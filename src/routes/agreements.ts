@@ -1,8 +1,8 @@
 import type { Hono } from 'hono'
-import { dayNumber, parseDate } from './dates.ts'
-import { ApiError, isInt, readBody, validation } from './http.ts'
-import { invoicesBetween } from './schedule.ts'
-import type { Agreement, Store } from './store.ts'
+import { dayNumber, parseDate } from '../domain/dates.ts'
+import { ApiError, isInt, readBody, validation } from '../http.ts'
+import { invoicesBetween } from '../domain/schedule.ts'
+import type { Agreement, Store } from '../store.ts'
 
 export function agreementRoutes(app: Hono, store: Store) {
   app.post('/agreements', async (c) => {

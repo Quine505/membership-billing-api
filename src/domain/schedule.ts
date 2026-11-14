@@ -1,7 +1,7 @@
 import { COUNTRIES } from './countries.ts'
 import { dayNumber, daysInMonth, formatDate, parseDate, type Day } from './dates.ts'
 import { mulDivRound } from './money.ts'
-import type { Agreement, Plan } from './store.ts'
+import type { Agreement, Plan } from '../store.ts'
 
 export type Invoice = {
   invoice_no: number

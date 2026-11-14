@@ -18,6 +18,17 @@ export function parseDate(value: unknown): Day | null {
   return { y, m, d }
 }
 
+// Accepts only YYYY-MM. Returns the first and last day of that month.
+export function parseMonth(value: unknown): { from: Day; to: Day } | null {
+  if (typeof value !== 'string') return null
+  const match = /^(\d{4})-(\d{2})$/.exec(value)
+  if (!match) return null
+  const y = Number(match[1])
+  const m = Number(match[2])
+  if (m < 1 || m > 12) return null
+  return { from: { y, m, d: 1 }, to: { y, m, d: daysInMonth(y, m) } }
+}
+
 export function formatDate({ y, m, d }: Day): string {
   const pad = (n: number, width: number) => String(n).padStart(width, '0')
   return `${pad(y, 4)}-${pad(m, 2)}-${pad(d, 2)}`
